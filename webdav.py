@@ -690,8 +690,16 @@ if __name__ == '__main__':
     srvport = 8000
     # Get local IP address
     import socket
-    myname = socket.getfqdn(socket.gethostname())
-    myaddr = socket.gethostbyname(myname)
+    # myname = socket.getfqdn(socket.gethostname())
+    # myaddr = socket.gethostbyname(myname)
+    # Until a connection is made to the internet, in Pythonista there is no way to know the IP
+    # address / interface that will be used for a connection. As such, we need to attempt to
+    # reach at least one internet site first, then get the IP address of the interface
+    # that was used for the connection.
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8',80))
+    myaddr = s.getsockname()[0]
+    s.close()
     print 'WebDav Server run at '+myaddr+':'+str(srvport)+'...'
     server_address = ('', srvport)
     # first is Server root dir, Second is virtual dir
